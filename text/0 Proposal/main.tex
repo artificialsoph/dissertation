@@ -1,0 +1,842 @@
+\documentclass[doc,floatsintext]{apa6}
+
+
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage[style=apa,natbib=true,backend=biber]{biblatex}
+\DeclareLanguageMapping{american}{american-apa}
+
+\usepackage{gensymb}
+\usepackage{hyperref}
+\usepackage[hyperref=true]{acro}
+\usepackage{xcolor}
+\usepackage{color}
+\usepackage{soul}
+\usepackage{amssymb,amsmath}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{threeparttable}
+\usepackage{cleveref}
+\usepackage{tikz}
+\usetikzlibrary{matrix,calc}
+
+\addbibresource{sophiaray.bib}
+
+
+\definecolor{dm}{RGB}{50,0,50}
+
+\hypersetup{
+colorlinks=true,
+citecolor=magenta,
+linkcolor=dm
+}
+
+
+\DeclareAcronym{rl}{
+  short=RL,
+  long=representation language
+}
+\DeclareAcronym{bl}{
+  short=BL,
+  long=simple Boolean logic
+}
+\DeclareAcronym{fol}{
+  short=FOL,
+  long=first-order Logic
+}
+\DeclareAcronym{cfg}{
+  short=CFG,
+  long=context-free grammar
+}
+\DeclareAcronym{rulex}{
+  short=RULEX,
+  long=rule-plus-exception model
+}
+\DeclareAcronym{dnf}{
+  short=DNF,
+  long=disjunctive normal form
+}
+
+% Karnaugh code courtesy http://tex.stackexchange.com/questions/140567/drawing-karnaughs-maps-in-latex
+\newenvironment{Karnaughvuit}%
+{
+\begin{tikzpicture}[baseline=(current bounding box.north),scale=0.8]
+\draw (0,0) grid (4,2);
+\draw (0,2) -- node [pos=0.7,above right,anchor=south west] {bc} node [pos=0.7,below left,anchor=north east] {a} ++(135:1);
+%
+\matrix (mapa) [matrix of nodes,
+    column sep={0.8cm,between origins},
+    row sep={0.8cm,between origins},
+    every node/.style={minimum size=0.3mm},
+    anchor=4.center,
+    ampersand replacement=\&] at (0.5,0.5)
+{
+    \& |(c00)| 00   \& |(c01)| 01   \& |(c11)| 11   \& |(c10)| 10   \& |(cf)| \phantom{00} \\
+    |(r00)| 0   \& |(0)| \phantom{0}   \& |(1)| \phantom{0} \& |(3)| \phantom{0} \& |(2)| \phantom{0}    \& \\
+    |(r01)| 1   \& |(4)| \phantom{0}    \& |(5)| \phantom{0}    \& |(7)| \phantom{0}   \& |(6)| \phantom{0}    \& \\
+    |(rf) | \phantom{00}    \&  \&  \&  \&  \&  \\
+};
+}%
+{
+\end{tikzpicture}
+}
+
+%Places 1 in listed positions
+\newcommand{\minterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {1};
+}
+
+%Places 0 in listed positions
+\newcommand{\maxterms}[1]{%
+    \foreach \x in {#1}
+        \path (\x) node {0};
+}
+
+\frenchspacing
+\title{Learning across levels of expressivity: a dissertation proposal}
+\shorttitle{Learning across levels of expressivity}
+\author{Sophia Ray Searcy}
+\affiliation{The University of Louisville}
+
+
+\begin{document}
+
+\maketitle
+
+% \tableofcontents
+
+% \begin{quote}
+% ``Locke, in the seventeenth century, postulated (and rejected) an impossible language in which each individual thing, each stone, each bird, each branch, would have its own name; Funes once projected an analogous language, but discarded it because it seemed too general to him, too ambiguous. In fact, Funes remembered not only every leaf of every tree of every wood, but also every one of the times he and perceived or imagined it.''\citep{borges1964}
+% \end{quote}
+
+% \citet{borges1964} described the fictional `Funes the memorious', who developed the ability to remember absolutely everything after an accident. This decidedly fictional ability does a good job of illustrating the role of concepts in people's daily lives.
+
+% \hl{explain more}
+
+% 1. (All) Grammar and readability should be prioritized. It's important that my readers know I value their time.
+
+% 1. (All) Revise/replace introductory section. Use this section to introduce and precisely define technical terms that are new to the reader. Argue for the importance of expressivity here. Consider a more typical narrative roadmap.
+
+% 2. (Pat) The empirical section is missing content or a justification of the lack of content.
+
+% 3. (All) Add cites to a few claims and points that require citations (Pat) Address connectionism more specifically.
+
+% 4. (John) Use "real-world", "model", "representation language" more precisely.
+
+% 7. (John and Nick) Table 2 needs work. It should be better connected to the text and the presentation should be more clear.
+
+% 8. (Pat and Nick) Ensure that the questions from the intro are answered or at least explicitly addressed at the end of the paper. Also add more to the concluding
+
+% 9. Address a few topics/questions:
+
+%   - How does expressability relate to learnability and tractability (Pat)
+%   - Clarify the different types of concepts to which models are applied, e.g. natural categories vs artificial categories or analytic concepts (John)
+%   - Clarify the relationship between (a) comparing between candidate formalisms and (b) specifically investigating the expressivity of different formalisms (John)
+%   - Clarify the limitations of the classical model (John)
+%   - Include future directions or hypothesizing about where work is going (Nick)
+
+
+\section{Introduction}
+
+% The primary goal here is to answer ``What is expressivity?'' That’s the idea that is used to carve up the literature in the remaining sections. I plan to separate the term used to talk about ``expressivity'' from the overloaded term ``complexity'' and discuss complexity, as needed, in the following sections. (Fodor 1975; Feldman, 2000; Goodman et al., 2008, Kemp, 2012; Piantadosi et al., 2015)
+
+Concepts are critical parts of thought; the building blocks of our most important decisions.
+People spend a great deal of time and effort learning concepts throughout life.
+Teachers are responsible for communicating concepts to students.
+A longstanding project of psychologists has been to understand the process whereby people learn concepts.
+To be of value, this understanding should help people learn and teach the kinds of concepts people actually use.
+
+But the concepts that people use are often different in several ways from those that are the subject of concept learning research.
+
+Explanations of concept learning take the form of a model, a formal description of the process of acquiring and using a concept.
+These models include a representational system, which is what defines the candidate concepts that can be learned.\footnote{In general, there is a clear relationship between a model and the representational system used by the model, and indeed when discussing models I will generally separate them according to the representational systems used. In these cases, when I refer to the expressivity of a model, it is specifically the expressivity of the representational system used by the model.}
+There are several key questions in the concept learning literature, a subset of which is included in \cref{tbl:questions}.
+Probably the most prominent of these questions is that of representation: which representation best captures how concepts are used? Are concepts made up of a set of necessary and sufficient features, rules \citep[e.g.][]{goodmantfg2008}, prototypes \citep[e.g.][]{rosch1973}, exemplars \citep[e.g.][]{medins1988}, or networks of weighted connections \citep[e.g.][]{lovemg2004}?
+
+\begin{table}
+\centering
+\begin{tabular}{ | p{3cm} | p{13cm} |}
+    \hline
+    Representation (general) & What is the basic structure of the representation? (rules, exemplars, prototypes, possibly even associations) \\
+    Representation (specific) & Given each representation type, there are many different ways to instantiate the representation. What kind of features are used? What operations? \\
+    \textbf{Expressivity} & How expressive is the representation? Can all computable functions be expressed? If not, what cannot be expressed? \\
+    Complexity & Given the representation, what determines the complexity (i.e. difficulty of processing and using) of the individual concepts in the representation? \\
+    Composition & How are existing concepts used in the service of learning new concepts? \\
+    Minimization & When learning/using a concept, does one find the absolute minimum version, an approximate minimum, or any at all? \\
+    Determinism & Many of the questions above can be answered either deterministically (i.e. given the same input, the response should always be the same) or not (e.g. probabilistically) \\
+    Aggregation & Related to the question of determinism is the idea that some important evidence of different representations might be lost when responses from many are aggregated. \\
+    Mixture & Related to the minimization and composition questions is the question of whether individuals hold a single definitive version of each concept or some composite or mixture. \\
+    \hline
+  \end{tabular}
+\caption{Key questions in literature}
+\begin{tablenotes}[para,flushleft]
+{\small
+A (certainly incomplete) list of the significant questions to be addressed by the study of representation and concept learning. These questions are all at least partially orthogonal, meaning that answering one might provide some information for answering others but should not be expected to completely answer any others. Additionally, the relationship between these questions and their answers is largely unstudied. The focus of the review at hand is expressivity.
+}
+\end{tablenotes} \label{tbl:questions}
+\end{table}
+
+A critical difference between representational systems is the set of candidate concepts that each can generate.
+If the representational system used by a model is incapable of generating concepts of the form ``\_\_\_ or \_\_\_'' then the model cannot explain how someone might learn that an eligible presidential candidate is ``a natural born citizen, \emph{or} a citizen of the United States, at the time of the adoption of this Constitution'' (emphasis mine).
+Here I focus on the question of expressivity, which concerns the kinds of concepts to which the models of concept learning can be applied.
+A common way to construct concepts is to use Boolean logic, where features are either True or False and concepts categorize examples made up of these features.
+In such a world, the number and combination of possible examples and concepts is fixed.
+If there are few enough features, learning can be accomplished by searching the space of concepts exhaustively.
+These properties have made this a convenient and fruitful test bed for models of concept learning \citep[e.g.][]{brunerga1956,roschm1975,smithm1981,feldman2000}.
+
+However, some concepts cannot be expressed in such a world.
+The concept of the number ``three'', for instance, seems to require examples to be understood as sets of objects rather than the individualized objects of Boolean logic.
+The system of concepts we think of as ``arithmetic'' seems to require a representation of sets of sets \citet[see][]{searcys2016}.
+This then raises the question of how the understanding of the learning of certain concepts should be informed by models that \emph{cannot be applied} to those concepts.
+In other words, how can a science of the learning of algebra or physics be informed by a model that itself could never, even in principle, learn algebra or physics?
+
+The very first step is to clarify the expressivity of many of the most used models of concept learning.
+The difficulty here is that different models have made use of different representational systems so that the relationship between the sets of concepts that each is able to express is not immediately clear.
+I begin this step in the Modeling section below.
+A second step is to consider how the existing empirical evidence in the concept learning literature informs questions of expressivity.
+Finally, I will conclude by discussing the problems that remain as well as the prospects indicated by this work.
+
+
+% is intimately related to representation, while orthogonal in other ways.
+
+% which, in its most basic form asks which sorts of concepts can and cannot be expressed by the mechanisms that underlie concept learning and use.
+
+
+% Early work on concept learning used relatively simple models of concepts
+
+% Expressivity, the ability of a model to express a range of concepts, has been important to the understanding of concept representation and to the design of concept learning models throughout the literature.
+% The classical model of concepts is the basis the earliest concept learning studies \citep{hull1920,brunerga1956}.
+% Many criticisms of the Classical model led it to be abandoned in favor of more complex models, and one of particular importance was that the model seemed incapable of representing real-world concepts (or, equivalently, that no real-world concept could be shown to use its structure).
+% The Perceptron model \citep{rosenblatt1958} is the basis of today's more complex connectionist models.
+% Like the Classical Model, the Perceptron was abandoned in favor of later models for several reasons, but one important point was the inability of the model to express relatively simple concepts like the logical XOR (see \cref{tab:xor}).
+
+% \begin{table}
+% \centering
+% \begin{tabular}{ c c c}
+%     $x$ & $y$ & XOR($x$,$y$) \\
+%     \hline
+%     0 & 0 & 0 \\
+%     0 & 1 & 1 \\
+%     1 & 0 & 1 \\
+%     1 & 1 & 0 \\
+%   \end{tabular}
+% \caption{XOR truth table}
+% \begin{tablenotes}[para,flushleft]
+% {\small
+% The truth table that describes the logical function XOR. This function cannot be represented by a single Perceptron \citep{rosenblatt1958,minskyp1969}, an early example of the importance of expressivity in the development of representational models.
+% }
+% \end{tablenotes} \label{tab:xor}
+% \end{table}
+
+% Concepts are the units of thought. When agents retain representations of past experience, they do so in the form of concepts. The interaction of these representations is what supports reasoning and decision making; in the case of social creatures these representations can be shared; and learning is the process of building these representations.
+
+% The structure of these representations then impacts how concepts are used at many levels. Work toward understanding the representation of concepts has been  \citep{frege1879}.
+
+% \citet{newellss1957}'s work on the Logic Theory Machine, one of the earliest Artificial Intelligence programs.
+
+% Because they underlie so much of human cognition, an understanding of concepts---such as information about the structure of concepts and about how they interact---should provide insight into how that cognition works and why.
+
+% And we have reason to believe that this approach is working.
+% The earliest investigations into the nature of concepts \citep{hull1920,brunerga1956,shepardhj1961} were primarily concerned with the \emph{effects} of the structure of concepts rather than the underlying structure itself.
+% They found that for different artificial concepts (i.e. those constructed in the lab) measures of learning differ.
+% Many researchers speculated that these measurements might provide clues as to the underlying structure of concepts and this process has been the focus of later studies of concept learning.
+% The approach of using a proposed representational system to predict learning outcomes has been a successful method for explaining the differences in learning outcomes caused by changes in the structure of artificial concepts \citep{feldman2000,goodwinj2011,goodmantfg2008}.
+
+% Knowledge of the underlying representation allows us to predict much more than the difficulty of learning a concept.
+% \citet{eavess2014} found that when learning a concept, the ordering of the examples affects how easily and accurately the concept is learned and that the underlying representation predicts ordering effects.
+% \hl{more examples?}
+
+
+% Proposals for this underlying structure include prototypes and exemplars, different rule-based systems, and connectionist systems; and each of these amounts to a class of proposals within which are many specific cases.
+% While many arguments are presented as advocating for one class of proposals against another (e.g. for rules instead of exemplars) many of the specific proposals include important details that can be lost when comparing the larger classes of proposals.
+% In other words, many of the details required to fully implement a representational learning model are hardly if at all informed by the class of representational system used.
+
+% For example, \citet{nosofskypm1994} argued that much of the useful information about what kinds of representations are used is lost when a model is fit to aggregated data instead of individual data and contrasting these approaches is what allowed a rule-based model to explain the prototype effects present in aggregate data.
+% However, the importance of this approach---aggregating fits to individual data rather than fitting to aggregated data---seems to have been lost even as models using rules have returned to prominence \citep[there are, of course, exceptions, including especially][]{goodmantfg2008}.
+% The landscape of proposals for concept structure is both large and intricate.
+% In addition to the more common questions of which class of proposals better accounts for human concept representation, many other details of concept representation are worth considering.
+% I focus for the rest of the review on one of these which I consider of particular importance: expressivity.
+
+\section{Preliminaries} \label{sec:pre}
+
+\subsection{What is expressivity?}
+
+Expressivity refers to the ability of a model to learn, use, or otherwise include a concept.
+The expressivity of a model can be likened to the set of concepts that the model can (accurately) express.
+For representation languages, expressivity is simply the set of all sentences (concepts) in the language.
+
+The classical model of concepts provides a quick illustration of the importance of expressivity.
+For instance, in its simplest version, the Classical model stipulates that each concept is represented by a set of features that are each necessary and jointly sufficient.
+A well-worn example is that of the concept ``bachelor'' defined as an unmarried male.
+Both unmarried and male are necessary features and, if both are present, together sufficient to consider someone a bachelor.
+There are many concepts which cannot be expressed within the Classical model, though.
+Consider a strike in baseball: a pitch is considered a strike if EITHER the batter fails to swing at a ball pitched into the strike zone, OR the batter swings at any pitch and misses, OR the batter hits the ball into foul territory and there is no more than 1 strike in the existing count.
+Because the description includes ``ORs''---often called disjuctions in logic---no single feature is necessary in order for a pitch to be a strike. The batter might swing at the ball or not, might strike the ball or not, the ball might pass through the strike zone or not and still be considered a strike.
+Additionally, no set of features are jointly sufficient (i.e. their presence would guarantee the application of the concept).
+Thus the Classical model can be said to be incapable of expressing the concept of strike in baseball (in fact, any concept that requires a disjunction is inexpressible in the Classical model).
+
+In general, more expressive models include all concepts of less expressive models, meaning that the corresponding set of concepts for less expressive models is typically a proper subset of the set of concepts corresponding to more expressive models.
+Expressivity can thus be thought of in terms of a hierarchy of expression, with the least expressive models at one end and the most expressive at the other.
+The major milestones in expressivity are presented in \cref{tbl:levels}.
+At the level of Boolean logic, models can express concepts that apply to examples made up of Boolean features (i.e. the feature may take on the value of either True or False).
+Much of the models of concept learning until recently have been limited to this level.
+First-order logic includes quantifiers over objects in sets which permit the expression of quantity concepts as well as comparisons.
+The next level, second-order logic, includes higher-order quantifiers such as quantifiers over sets or concepts.
+These are necessary for expressing concepts like the natural numbers or arithmetic.
+Finally, at the most expressive end of this list are universal representations \citep{turing1937,abelsonss1996} that are capable of expressing any computable function.
+
+% Results regarding expressivity have been important for concept learning and related fields: \citet{minskyp1969} showed that a single-layer neural network is incapable of learning the Boolean concept XOR; \citet{carey2009} has argued that children learn to use number, a first-order logic concept, by bootstrapping the the recursive relationship between small numbers and a known list of numbers.
+% These are examples of concepts that can be represented by \acp{rl} with different expressive capacities: XOR can be expressed by predicate or Boolean logic, natural number can be expressed by first-order logic but not predicate logic, arithmetic can be expressed by second-order logic but not first-order logic.
+
+\subsection{Notation}
+
+There are a few points of notation that should be cleared up before use.
+
+A representation language is a representational system that can be defined in some formal language. A common means of defining a formal language is using a \ac{cfg}, a grammar defined by production rules that govern the abstract structure of the sentences in a language originally developed by \citet{chomsky1956}.
+A \ac{cfg} is a system for generating formulas, or `sentences' that compose a language. A \ac{cfg} consists of: `variables' which are symbols that \emph{do not} appear in the produced sentences and one of which is the start symbol, `terminals' which are the terminal symbols that \emph{do} appear in the sentences, and the production rules that link variables to terminals. Variables are often capitalized and terminals are often lowercase to distinguish between them. An example of a small \ac{cfg} is,
+\begin{align} \label{eqn:classical}
+  S_0 &\rightarrow S_0 \wedge F \mid F  \\
+  F &\rightarrow f_0 \mid f_1 \mid \dots \mid f_n ~, \nonumber
+\end{align}
+where $n$ is the total number of possible features. To see how this grammar produces the sentence $c=f_1 \wedge f_2$, begin with the start symbol $S_0$, then use the first production $S_0 \rightarrow S_0 \wedge F$ (the vertical lines separate the possible productions for a given variable). The second $S_0$ can then be removed using the second production $S_0 \rightarrow F$ to give us $F \wedge F$. Finally, we can pick productions from the abbreviated bottom row to give $f_1 \wedge f_2$. The initial ``$c=$'' is omitted because that is the same for every representation language used here.
+
+The grammar in \cref{eqn:classical} corresponds to a common interpretation of the classical model of concepts: that a concept is represented by the properties (or features) necessary and jointly sufficient for its application. In Boolean logic, this description is captured by using the AND operation ($\wedge$) which returns True if both inputs are True and False otherwise. If $f_1$ and $f_2$ are each necessary, and together sufficient, for the application concept $c$, we can represent the concept with $c = f_1 \wedge f_2$. When this relationship is extended to larger groups of features, the necessary and jointly sufficient properties still hold.
+
+Many models of concept learning use a representational system that can be equivalently defined in a representation language. Because representation languages provide a useful tool for discussing the expressivity of a representation, my approach will be to present such models using a representation language where possible.
+
+The representation languages discussed here include a few symbols and operations which may not be familiar to the reader. I use \{0, 1\} for the Boolean labels corresponding to False and True respectively. `Boolean logic' is a representation language in which all the variables and operations may only output one of the Boolean labels. \Ac{fol} is like Boolean Logic with a few additions: Quantifiers are operations that deal with number in a set of objects. The existential operator---``$\exists$'' in a formula like $\exists o \in \mathcal{O} ~ p(o)$, read ``there exists an $o$ in $\mathcal{O}$ such that $p(o)$''---applies an expression to every item in a set and returns $1$ if the expression is true for one or more item. The universal quantifier---``$\forall$'' in a formula like $\forall o \in \mathcal{O} ~ p(o)$, read ``for all $o$ in $\mathcal{O}$ such that $p(o)$''---operates similarly by applying an expression to every item in a set but instead requires the expression to be true for \emph{all} items.
+
+\begin{table}
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{ | p{4cm} | p{6cm} | p{5cm} | p{6cm}|}
+    \hline
+    Level & Description & Examples of concepts & Models \\ \hline \hline
+    Boolean Logic and predicate calculus & Each feature and operator take as input only the Boolean labels or expressions that evaluate to them & AND, OR, XOR, NAND, the SHJ set of concepts \citep{shepardhj1961} & Exemplar models \citep{rosch1973,smithm1981} and many rule-based models \citep{nosofskypm1994,feldman2000,goodwinj2011} \\ \hline
+    First-order logic & As Boolean logic with the addition of quantifiers over elements & Quantities and comparisons & \citet{kemp2012} \\ \hline
+    Second-order logic & As First-order logic with the addition of quantifiers over relations, functions, and/or sets & Natural number line and arithmetic & \citet{piantadositg2015} \\ \hline
+    Higher-order logics, lambda-calculus, and others & Universal models of computation that can describe any computable function & Arbitrary computer programs and concepts & \\
+    \hline
+  \end{tabular}
+}
+\caption{Levels of expression}
+\begin{tablenotes}[para,flushleft]
+{\small
+Expressivity can be organized into a hierarchy. An example of this is presented in the above table with the less expressive \acp{rl} on top. Each row corresponds to a class of \acp{rl} that can express any concept expressible by those above.
+}
+\end{tablenotes} \label{tbl:levels}
+\end{table}
+
+% \subsection{Which representation(s)?}
+
+% A foundational question in the study of concept learning is about what representations are used to learn concepts.
+% There are in fact (infinitely) many candidate representations, and researchers have found it useful to group the proposals into a few broad classes: exemplar models store observed examples of a class in a multi-dimensional space and categorize novel (and non-novel) examples according to their position in this space relative to stored examples; prototype models summarize observed examples into one or a few prototypes and categorize examples based on the position relative to these prototypes; rule models learn (or select) a rule from a representation language according to how well
+
+
+% The primary goal here is to answer ``What is expressivity?'' That’s the idea that is used to carve up the literature in the remaining sections. I plan to separate the term used to talk about ``expressivity'' from the overloaded term ``complexity'' and discuss complexity, as needed, in the following sections. (Fodor 1975;
+
+% Feldman, 2000; Goodman et al., 2008, Kemp, 2012; Piantadosi et al., 2015)
+
+\section{Modeling}
+
+% The models discussed here can be divided into three categories: those with explicit rule-based models already in the form of a grammar, those with rule-based or rule-like models that are easily translated into grammars, and those for which translation into rule-based grammars is not presently practical. My approach in this section is to consider a number of concept learning models, informally discuss which of the three above categories they belong to, and discuss which aspects of each model have an impact on expressivity and why.
+
+% The use of grammars or similar tools to discuss representations is valuable when discussing expressivity. A grammar concisely describes the set of possible sentences (in our case concepts) that are in a language (in our case a model). Thus, to show that a concept model can express a concept in a certain class, one may use the corresponding grammar to show that such a concept is in the set of possible concepts for the model. It is also possible to show that a grammar \emph{cannot} produce a sentence of a certain type, though I will do so informally, without rigorous mathematical proofs.
+
+When surveying the modeling literature I follow a common trajectory \citep[e.g.][]{smithm1981,laurencem1999,murphy2002} by beginning with the classical model of concepts, followed by probabilistic/prototype models, and exemplar models. 
+This provides a convenient narrative for introducing rule-based models that have found success in recent years.
+The process of assessing the expressivity of different models requires precise specification of a representational system (ideally a representation language).
+This means that in some cases, where the description of a model is incomplete or unclear about representational details, assumptions will have to be made.
+The analysis that follows is thus only intended to pertain to the published descriptions of each model together with the clearly indicated and hopefully reasonable assumptions made.
+
+\subsection{Classical model}
+
+The classical model proposes that each concept is made up of a list of necessary and jointly sufficient features. For example, the concept ``bachelor'' might be defined using a classical model consisting of the features ``unmarried'' and ``man''. Any example that satisfied both of those features would then be categorized as a ``bachelor'' and any example that fails either or both would not be. Using a logical formula, this looks like $c_{bachelor} = f_{unmarried} \wedge f_{man}$. The representational system inherent in the classical model is simply a series of conjunctions (described formally in \cref{eqn:classical}).
+
+% The classical model is limiting, though; by requiring that each feature be necessary and that the set of features be jointly sufficient, the model omits any possibility of several types of concepts concepts. One such omission is any concept that requires a disjunction, like the concept of strike in baseball.
+
+% These limitations might be beneficial when the goal is to precisely analyze or teach a formal definition of a concept.
+% Triangles are often taught as shapes that have exactly three sides, two necessary and jointly sufficient features.
+% Additional information can be incorporated as other such features---the interior angles add to $180\degree$, the side lengths follow Pythagoras' theorem, and so on.
+% Isosceles triangles are then taught as triangles that have two equal sides, again two necessary and jointly sufficient features upon which other necessary and sufficient features can still be added.
+% This structure permits very efficient inferences, such that the absence of a single necessary feature implies that the concept does not apply, the presence of a small set of sufficient features implies that the concept does apply, and composition of concepts clearly implies the subset relationship between concepts.
+
+% However useful these aspects of the classical model might be in certain cases, there are several problems, the most commonly discussed of which are a result of the classical model including no processing component.
+% There is no consensus on how classical representations might be learned or how they might be used to produce other measures of concept use, like typicality ratings.
+% \citet{smithm1981} discuss several ways in which the classical model can be reinterpreted to fill these gaps, but this exercise shows that the classical model's problems are not merely a lack of such detail, but that the limiting representation of the classical model (a list of necessary and sufficient features) precludes any apparent attempt to fill in the gaps.
+
+Because the classical model has one means, conjunction, for combining features in order to represent a concept, the expressivity of this model is limited. An illustration should suffice to explain the problems this creates. Imagine a list of features: $\{f_{color},f_{shape}\}$. We might assume that a classical model can combine such features with their possible values to create Boolean features, such as $(f_{color}=v_{blue})$. Consider, then, the number of concepts in this simple world. If we restrict the universe to objects with these two features, and restrict each feature to three possible values, then there are $3^2 = 9$ different examples and $2^9=512$ different concepts in this universe. How many of those concepts can be represented using a classical model? Just $4^2=16$ because there are two features each of which can take on three values or be omitted. In such a world, the classical model has coverage of about $3\%$ of the possible concepts. The model has a concept for ``red objects,'' ``blue and square objects,'' and ``circle objects'' but no concept for ``objects that are not blue''\footnote{
+The problem here is that no necessary feature exists. The use of negation, discussed further in the Expressivity remedies section, would allow the model to construct a new feature ``NOT(blue)'' that would then satisfy this concept.
+} nor ``either red or not square but not both.''
+And the proportion of the total concepts that can be represented quickly decreases as either the number of features or the number of values for each feature increases. To put it plainly, in any realistic context with a large number of complex features, the share of possible concepts that can be represented by the classical model diminishes to nothing.
+
+\subsubsection{Expressivity remedies}
+
+% Just as \citet{smithm1981} consider possible remedies for the lack of processing details in the classical model, and then use that illustration to inform the discussion of later models, I briefly consider possible remedies for the classical model's lack of expressivity. 
+
+One means to address the lack of expressivity is the inclusion of negation, the operation that simply flips 0s to 1s and vice-versa. Such a model might add a third rule to the classical model's grammar,
+\begin{align} \label{eqn:classical_neg}
+  S_0 &\rightarrow S_0 \wedge N \mid N \\
+  N &\rightarrow \overline{F} \mid F \nonumber \\
+  F &\rightarrow f_0 \mid f_1 \mid \dots \mid f_n ~. \nonumber
+\end{align}
+This allows the model to represent concepts like ``objects that are not blue.'' With negation, the model can represent $9\%$ of the concepts in the universe of two features with three values described above. This isn't a very large improvement, and the proportion still declines to zero in the limit, but it sets up a promising possibility that will have to wait for the next fix.
+
+The other improvement is the inclusion of compositionality. Composition roughly corresponds to building novel concepts out of existing ones. Composition is thought to be an important part of concept representation \citep{goodmantfg2008} but it is omitted from many models for a variety of reasons, chief among them that allowing composition makes the set of sentences that can be produced by the representation language infinite and thus impossible to completely enumerate. The following grammar adds a list of $m$ concepts to the set of terminals that can take the place of features,
+\begin{align} \label{eqn:classical_neg_comp}
+  S_0 &\rightarrow S_0 \wedge N \mid N \\
+  N &\rightarrow \overline{F} \mid F \nonumber \\
+  F &\rightarrow C \mid f_0 \mid f_1 \mid \dots \mid f_n \nonumber \\
+  C &\rightarrow c_0 \mid c_1 \mid \dots \mid c_m ~. \nonumber
+\end{align}
+In essence, this change allows any concept to take the place of a feature in another concept.
+
+If compositionality is added to the classical model alone (without negation) it provides no effect, as composing a series of conjunctions with another series of conjunctions results in nothing more than another series of conjunctions. However, when combined with negation we arrive at a representation that has full coverage of the Boolean concepts. To see why, consider the concept $c_1$, ``objects that are not blue and not square.'' The Classical model can learn this by inserting the negated features into a single conjunction.
+
+Only when the Classical model is modified to include both negation and compositionality can it represent $c_2$, ``objects that are not (blue and square).''
+The difference is subtle, but because ``not'' operates outside of the conjunction in $c_2$, any object that is ``not blue'' is in the concept regardless of the shape. 
+The $c_2$ concept has the form of the NAND operation, an extremely important operation in digital logic design because of its ability to represent all logical functions and convenient physical implementation in transistors \citep{roth2013}.
+Because NAND can be combined to make any logical function and the modified Classical model includes composition, this means that such a model would be capable of representing all Boolean concept.
+
+The problems with the Classical model and the two-part solution proposed illustrate a few things about the expressivity of models of representation.
+The improvements that would enable expressive representation here are orthogonal to other purposes of the representational model.
+If nothing else, the use of necessary and sufficient features is a critical part of the Classical model, but the remedies necessary to allow expressivity completely remove this---a Classical model that can freely use negation and composition can express concepts with no necessary or sufficient features whatsoever. In fact, such a modification allows the expression of all possible Boolean concepts.
+
+
+\subsection{Prototype models}
+
+% \citet{posner1986}
+
+% \citet{reed1972}
+
+The representational system used by the Classical model is a simple list of features.
+The next model, called the prototype or probabilistic model, includes the addition of a weight for each feature.
+When determining if an example is in a prototype concept, the model adds together the weights for each matching feature.
+If the sum of the weights exceeds some threshold (possibly zero) then the example is in the concept.
+
+Where the various models in this class differ is in how that representational system is \emph{used}. For instance, \citet{collinsl1975} developed the Spreading Activation model which uses the prototype representation of weighted features. When categorizing an example, the spreading activation model compares the example with the concept along random features, adding the weight for each feature where the concept and example match and subtracting the weight for mismatches. Whenever the combined weights exceed a positive threshold, the example is determined to be a match; whenever they become more negative than a separate negative threshold, the example is determined not to be in the concept.
+
+Another notable model in this category is the Perceptron, originated by \citet{rosenblatt1958}. While more modern connectionist models surely do not belong in a discussion of prototype models, the Perceptron, despite being the precursor to such connectionist models, certainly does. The representation used by the Perceptron model is two variables, an $n$-length vector of weights $w$ and a bias $b$, where $n$ is the maximal number of features. This representation is used for classification of an example $x$ by calculating $H(w\cdot x + b)$, where $H()$ is the Heaviside function that outputs 1 if the input is positive and 0 otherwise.
+
+In spite of its relationship to other models, the Perceptron functions in a fundamentally similar way to the prototype model. A Perceptron works by adding together the weights for every true feature (i.e. where $x_j=1$), just as prototype models add together weights for every feature that matches between the candidate and the concept. Rather than a list of both features and weights, the Perceptron only represents a list  of weights, but because the weight for any excluded feature can be set to $0$, these are equivalent representations.
+
+The similarity between prototype models and the Perceptron means that many analyses of the Perceptron model can be expected to generalize to the remainder of models in this class. Importantly for our purposes, understanding the Perceptron as a ``linear classifier'' clarifies the limits of the model's expressivity. The Perceptron can only learn linearly separable categories and is incapable of learning some simple logical functions like XOR (the logical function for `either a or b but not both') \citep{minskyp1969}.
+This will be true of all models that use a weighted list of features for representation.
+While \citet{smithm1981} argue that prototype concepts are capable of learning disjunctive concepts (e.g. a concept `furniture' which is a disjunction of, among other things, `chair' and `rug'), this is only true of disjunctive concepts that are linearly separable in terms of the input features.
+
+Like the Classical model, this limited expressivity can be solved in several ways, but each of those ways would fundamentally alter the representation of the models. For instance, composite features can be made by using operations to combine features. 
+Highly correlated features might be learned in conjunctions, so that a `flies and has feathers' feature might be learned instead of learning `flies' or `has feathers' individually. 
+Alternatively, complex combinations of features can be used that would permit a concept that was not previously linearly separable to be linearly separable in a feature space that uses the new features. 
+The danger here is that by allowing additional assumptions to do this much work, the model might no longer be recognizable as the prototype model.
+
+\subsection{Exemplar models}
+
+% \citep{nosofsky1986}
+
+Exemplar models add another layer of complexity to concept representation.
+This class of models uses a system based on the prototypes from before (i.e. a list of weights and features) and combines these \emph{exemplars} into a set or list.
+This approach is closely associated with the work of Rosch and collaborators \citep{mervis1980,roschm1975}, though Rosch has stated explicitly that this work was never intended to produce a formal model of representation \citep{rosch1999}.
+In spite of this, \citet{smithm1981} developed a representational model that captures some of the notions implicit in the prototype literature, called the Best Examples model and additionally presented a somewhat different alternative called the Context model.
+
+
+% My treatment here of non-rules models will vary by case. In certain cases, it seems that theories proposed as alternatives to rule-based models are not meant as models of representation at all, but rather theories that constrain such models. For instance, the prototype theory of Rosch (CITE) is often presented as a \emph{representational} theory that is an alternative to logical representations (CITE). However, Rosch has described the many findings of prototype effects as really referring to ``judgements of degree of prototypicality'' and clearly stated that ``[p]rototypes do not constitute a theory of representation''.
+
+
+The Best Examples model categorizes an example as a member of a target concept, $C$, by comparing the example to objects in the concept and a contrasting concept, $\overline{C}$, which might take the form of the union of examples in various non-$C$ concepts.
+Given a target example, $x$, that is to be categorized, the model draws objects, $o_i$, from the set of all objects (both $C$ and $\overline{C}$) according to how similar each object is to the target using a similarity metric discussed below.
+The model keeps track of the number of objects that come from  $C$ and $\overline{C}$ until one of them reaches a specified number of objects.
+
+Similarity is the main distinction between the Context model and Best Examples as the Context model uses a multiplicative similarity metric.
+The Best Examples model uses an additive similarity metric, meaning that the chance of of drawing an object $o_i$ given an example, $x$, is proportional to the sum of the weights of the matching features.
+Under the Best Examples model, consider one object $o_9$ matches example $x$ on 9 out of 10 features and another $o_10$ that matches on all 10 features.
+If all features are weighted similarly, this mismatch reduces similarity by 10\%.
+% , i.e. $p(o_9|x) /p(o_10|x) =  0.9$ .
+
+The Context model, on the other hand, uses a multiplicative similarity measure.
+In place of weights the Context model has a cost $c_f < 1$ for each feature.
+Similarity between $o_i$ and $x$ is then determined by multiplying the cost of each mismatched feature.
+Consider how the above example with $o_9$ and $o_10$ changes when a multiplicative measure is used.
+Assuming that the cost for each feature is $c_f = 0.1$ then a single mismatched feature reduces similarity by 90\%.
+
+For expressivity, the important point is that the Context model is able to express all Boolean concepts and this is likely true of the Best Examples model as well.
+This is somewhat trivial to demonstrate for the context model.
+The cost for each feature can be set to $c_f=0$ so that the only objects with a nonzero chance of being drawn are those that exactly match the target example.
+Any concept can then be constructed by adding the entire positive extension as the exemplars of $C$ and the entire negative extension as the exemplars of $\overline{C}$.
+Using this, any concept that can be extensionally defined (thus, any finite Boolean concept) can be represented using the full set of exemplars in the extension.
+While this demonstration doesn't translate perfectly to the Best Examples model, it suggests that such expressivity likely also belongs to the model.
+
+% \citet{smithm1981}
+
+% For the context model, the similarity between two objects $s_c(o_i,o_j)$ is calculated by multiplying a similarity value for each feature (all objects are assumed to contain the same features).
+
+% The probability of drawing each example from memory given the target example $p(o|x)$ is
+
+% \begin{equation} \label{eqn:context}
+%   s_{context}(o_1,o_2) = \prod_{f \in F} s_f(f,o_1,o_2)
+% \end{equation}
+% \begin{equation}
+%   s_f(f,o_1,o_2) =
+%   \begin{cases}
+%   1   & \quad o_1[f] = o_2[f] \\
+%   c_f & \quad else \\
+%   \end{cases}
+% \end{equation}
+% \begin{equation} \label{eqn:exemplardraw}
+%   p(o|x) = \frac{s_{context}(o|x)}{\sum_{o_i \in U} s_{context(o_i|x)}}
+% \end{equation}
+% where $c_f$ is something of a fudge factor for each feature though $c_f$ is always less than $1$.
+
+% The main difference between the context model of \citet{medins1978} and the best-examples model is the method for calculating similarity.
+% The context model uses multiplicative combination for the similarity metric. For additive similarity measures, like family resemblance, if many features are considered, then misalignment along a few features will not matter. However, for multiplicative measures, the probability of drawing an example that is misaligned with the test object along a few features decreases quickly in the number of features.
+
+% With additive similarity, exemplar models become linear classifiers just like prototype models. This is because classification is performed by drawing according to \cref{eqn:exemplardraw} and determining an object to be in a concept when a critical number of examples are drawn from the concept, or out of the concept when a critical number are drawn from a contrasting category. This second measure, the number of examples drawn, is also additive, though the operation is quite different. What this means is that exemplar models with additive similarity have nearly identical limitations to expressivity as prototype models.
+
+% Multiplicative similarity solves this problem, though, permitting exemplar models with multiplicative similarity, like the context model to represent any Boolean concept, for instance, given enough examples.
+
+
+
+% \subsection{Connectionist models}
+
+% While some models in the exemplar and prototype tradition do achieve a desirable level of expressivity (e.g. the context model's ability to represent all Boolean concepts) most of those I discuss---indeed, it seems most of those in the literature---are not generally so expressive. After the original criticism of the simplest connectionist networks, e.g. by \citet{minskyp1969}, expressivity (though without using that term) became one explicit goal of connectionist models of concept learning.
+
+% \citet{rumelharthw1988}
+
+% \citet{kruschke1992}
+
+
+
+% \citet{lovemg2004} developed SUSTAIN, a connectionist network made to be flexible by adding `clusters' as the learning problem demands it.
+
+
+% Briefly discuss non-rule representations and justify a focus on rule­-based representations (Rosch and Mervis, 1975, Medin and Schaffer, 1978, Nosofsky, 1986, Kruschke, 1992, Love et al., 2004, McClelland, Rumelhart, 1986)
+
+\subsection{Rule-based models with limited expressivity}
+
+% Discuss models with limited expressivity i.e. Boolean concepts (Neisser and Weene 1962; Haygood 1963; Medin, Wattenmaker, and Michalski 1987; Nosofsky et al., 1994; Feldman 2006; Goodwin 2006; Vigo 2009; Lafond, Lacouture, and Cohen, 2009; Goodwin and Johnson-Laird 2011; Gentner, 1983; Holyoak and Thagard, 1989)
+
+% \citep{nosofskypm1994}
+
+Rule-based models typically utilize some form of the representation length approach \citep{feldman2000,kemp2012,goodwinj2011}
+In this approach, a model consists of: i) a representation language, ii) a method for computing the length of formulas in the language, and iii) a method for scoring the length of the shortest consistent formula given a concept.
+The language is often generated by a formal grammar.
+The length function typically counts the number of operations in each formula and assigns a (not necessarily uniform) cost for each of them.
+The minimization process is often exhaustive for most limited representation languages (in other words, if one can generate a set of all consistent formulas, that set is guaranteed to include the minimal formula).
+But this approach is generally intractable so estimation techniques are used in many cases.
+
+The \ac{rulex} of \citet{nosofskypm1994} was one of the earliest concept learning models that explicitly built complex concepts (i.e. concepts that include multiple operations) out of rules.
+In \ac{rulex}, concepts are built as a disjunction of simple rules and one or more exceptions.
+This is implemented as a decision tree equivalent to the following grammar,
+%
+\begin{align} \label{eqn:rulex}
+  S_0 &\rightarrow \left( R E_n \right) E_p \\
+  R &\rightarrow F \mid R \wedge F \nonumber \\
+  E_n &\rightarrow \wedge \overline{(R)} E_n \mid \epsilon \nonumber \\
+  E_p &\rightarrow \vee (R) E_p \mid \epsilon ~. \nonumber
+\end{align}
+This grammar uses the $F$ production from \cref{eqn:classical} to generate features.
+Presenting the \ac{rulex} model as a grammar makes it somewhat easier to see its relationship to the Classical model and exemplar models. Like the Classical model in \cref{eqn:classical}, the rule production, $R$, generates simple conjunctive rules. And like exemplar models, \ac{rulex} incorporates observed positive and negative examples through the exception productions, $E_n$ and $E_p$. These two parts function in a model that probabilistically adds complexity (e.g. either more features to the rule or new exceptions) at each step.
+
+Together, these components have two effects that are of interest. First, the addition of an unbounded number of exceptions means that \ac{rulex} is capable of expressing all Boolean concepts. To show this, consider that all Boolean concepts include one set of negative examples and one set of positive  ones. One can see that \ac{rulex} can represent any concept by starting with an empty $R$ production and adding all positive examples as positive exceptions and negative examples as negative exceptions. This would then accurately represent the concept and the $R$ production could be used to simplify the representation, so that fewer exceptions are needed. The second effect is that the probabilistic construction of formulas places a soft limit on representation length. Each exception and rule is added with a certain probability $<1$ so that the more complex the concept, the less likely it is to be produced.
+The \ac{rulex} model demonstrates that rule-based systems can achieve a balance that includes both an expressive model and a plausible processing mechanism.
+
+\citet{feldman2000} designed a model that explains the difficulty of learning a large number of concepts based on two effects: Boolean complexity and parity.
+For each concept, Boolean complexity is derived from the representation length approach for the language of unstructured Boolean formulas,
+%
+\begin{align*}
+  S_0 &\rightarrow (S_0) \wedge (S_0) \\
+  S_0 &\rightarrow (S_0) \vee (S_0) \\
+  S_0 &\rightarrow \overline{(S_0)} \\
+  S_0 &\rightarrow F ~.
+\end{align*}
+%
+The minimal formula was found using a heuristic method (finding the absolute minimal Boolean formula is an NP-Hard problem, meaning that it quickly becomes infeasible to compute for large inputs).
+Parity is determined by the fraction of examples that are positive or ``in the concept''.
+So concepts with \emph{up} parity have more negative examples than positive, like $f \equiv a \wedge b$, and concepts with \emph{down} parity have more negative examples than positive, like $f \equiv a \vee b$.
+
+Unlike the \ac{rulex} model, Boolean Complexity uses rules that need not have any correspondence to the examples observed. Boolean Complexity additionally uses a different notion of complexity---rather than probabilistically generating formulas for a given concept, it finds the minimal ones---that has a similar effect. Complex concepts can be represented while still being less likely (here more complex).
+
+\citet{goodwinj2011} designed a model based on mental models \citep{johnsonlaird1983}, an important theory of concepts that had previously not been applied to concept learning for logical concepts.
+Goodwin and Johnson-Laird use a representation length approach with the following representation language,
+%
+\begin{align*}
+  S_0 &\rightarrow S_0 \otimes S_0 \mid S_1\\
+  S_1 &\rightarrow S_1 \wedge S_1 \\
+  S_1 &\rightarrow F \mid \overline{F} ~,
+\end{align*}
+%
+where $f_0 \otimes f_1$ is the XOR operation.
+The exclusive-or operations separate the ``mental models'', so that the concept $f \equiv (f_0 \wedge f_1) \otimes \overline{f_1}$ would contain two models, $f_0 \wedge f_1$ and $\overline{f_1}$.
+The number of models in the minimal formula for each concept (and equivalently the number of $\otimes$ operations plus 1) is used to set the complexity of each formula.
+
+% \begin{table}
+% \centering
+% \resizebox{\columnwidth}{!}{%
+%   \begin{tabular}{ | p{2.5cm} | p{3.5cm} | p{5cm} | p{2.5cm} | p{2.5cm} |}
+%     \hline
+%     Study & Grammar & Complexity  & Minimization & Description
+%     \\ \hline
+%       \citet{nosofskypm1994} &
+%       {\begin{align*}
+%         S_0 &\rightarrow S_0 \wedge S_0 \\
+%         S_0 &\rightarrow S_0 \vee S_0 \\
+%         S_0 &\rightarrow F
+%       \end{align*}} &
+%       The number of features in a formula. &
+%       Heuristic (with some known deviations from ideal \hl{CITE}) &
+%     \\ \hline
+%       \citet{feldman2000} &
+%       {\begin{align*}
+%         S_0 &\rightarrow S_0 \wedge S_0 \\
+%         S_0 &\rightarrow S_0 \vee S_0 \\
+%         S_0 &\rightarrow F
+%       \end{align*}} &
+%       The number of features in a formula. &
+%       Heuristic (with some known deviations from ideal \hl{CITE}) &
+%     \\ \hline
+%       \citet{goodmantfg2008} &
+%       {\begin{align*}
+%         S_0 &\rightarrow S_0 \vee S_0 \mid (S_1)\\
+%         S_1 &\rightarrow S_1 \wedge S_1 \\
+%         S_1 &\rightarrow F
+%       \end{align*}} &
+%       \begin{equation*} \left( \prod_{f \in F} \beta (C_f(s) + 1) \right) e^{ b Q_l (s,E)} \end{equation*} &
+%       Monte Carlo simulation &
+%     \\ \hline
+%       \citet{goodwinj2011} &
+%       {\begin{align*}
+%         S_0 &\rightarrow \otimes(S_1)\\
+%         S_1 &\rightarrow S_1, S_1 | S_2 \\
+%         S_2 &\rightarrow S_2 \wedge S_2 | F
+%       \end{align*}} &
+%       The number of models used (separated by $\otimes$) &
+%       Brute force &
+%       Based on Mental Models \\
+%     \hline
+%   \end{tabular}
+% }
+% \caption{Representation-length models for less expressive concepts. All grammars include the rule $F \rightarrow f_0 \mid \overline{f_0} \mid f_1 \mid \overline{f_1} \mid \dots$ that allows $F$ to produce any literal as a nonterminal.}
+% \end{table}
+
+
+
+% \begin{table}
+% \centering
+% \resizebox{\columnwidth}{!}{%
+%   \begin{tabular}{ | p{2.5cm} | p{3.5cm} | p{5cm} | p{2.5cm} | p{2.5cm} |}
+%     \hline
+%     Study & Grammar & Complexity  & Minimization & Description \\
+%     \hline
+%       \citet{kemp2012} &
+%       \begin{aligned}[t]
+%         S_0 &\rightarrow S_0 \vee S_0 \mid (S_1) \mid S_3 (S_0)\\
+%         S_1 &\rightarrow S_1 \wedge S_1 \mid S_2 \mid S_3 (S_1)\\
+%         S_2 &\rightarrow \forall x \mid \exists x \\
+%         S_3 &\rightarrow F \mid \overline{F}  ~.
+%       \end{aligned}&
+%       $(1 - p)((1-q)l^+ + qb) + p((1-q)l^- + qb^-)$ where $p$ is the probability of encoding the negative extension, $q$ is the probability of encoding examples without minimizing formula, $l^+$ ($l^-$) is the number of features in the minimal description of the positive (negative) extension with relational features, e.g. $R(x,y)$, counting double, and $b^+$ ($b^-$) is the number of examples times the number of features for the positive (negative) extension. &
+%       Exact minimization was performed for  &
+%       \\
+%       \hline
+%   \end{tabular}
+% }
+% \caption{Representation-length models for more expressive concepts.}
+% \end{table}
+
+The Rational Rules model of \citet{goodmantfg2008} uses \ac{dnf} grammar and applies this grammar with a creative measure of complexity and minimization strategy.
+The grammar is as follows:
+\begin{align} \label{eqn:rr}
+  S_0 &\rightarrow S_0 \vee S_0 \mid (S_1)\\
+  S_1 &\rightarrow S_1 \wedge S_1 \nonumber \\
+  S_1 &\rightarrow F \mid \overline{F} ~. \nonumber
+\end{align}
+
+The complexity is calculated as the probability of the formula given the set of labeled examples.
+The precise details of the probability calculation are not important for current purposes but the gist of it is.
+The probability depends on how often each variable (i.e. each line in \cref{eqn:rr}) is used for each production (i.e. the options separated by $\mid$).
+So a formula that reuses many $f_1$ terminals but few others will be more probable than a formula with the same number of total productions spread out more evenly.
+
+
+\subsection{Models with greater expressivity}
+
+The rule-based models discussed above (with the possible exception of the Classical model) are each capable of expressing all Boolean concepts. However, as discussed previously, Boolean logic is at the bottom of the hierarchy of expressivity for logical languages (see \cref{tbl:levels}). I now turn my attention to models designed explicitly to apply to concepts that require more expressive representations.
+
+\citet{kemp2012} developed a rule-based model that accounted for concepts that can only be expressed in first-order logic by incorporating quantification into \ac{dnf} at different levels. Object quantification is perhaps more common in the concept learning literature. It allows for statements that apply a certain subformula to all objects in a set, such as `for all objects, the color is blue.'  Feature quantification, on the other hand, allows statements of the form `there exists a feature with value 1' which are then applied to objects. \citeauthor{kemp2012} additionally designed a set of models to permit a comparison between these two quantification types.
+
+\citet{piantadositg2015} used a lambda calculus-based representation system to implement several different representational languages including an unstructured Boolean logic language \citep{feldman2000}, \ac{dnf} \citep{goodmantfg2008}, and several others.
+Instead of finding the minimal formula consistent with each concept, they used a probabilistic sampling method similar to \citet{goodmantfg2008} to generate formulas for a set of observed examples.
+The full setup allowed for the comparison of several candidate representation languages by substituting in different grammars. \citeauthor{piantadositg2015} then used a second set of representation languages that included several different methods for accounting for more expressive representations.
+Each of these were implemented by adding a new set of productions to the grammar generating the language and, as such, these methods could be mixed and matched.
+In addition to quantification, which we have already discussed, this set includes second-order predicates, relational predicates, a one-or-fewer predicate, and small cardinalities (e.g. `there exists exactly one/two/three objects such that...').
+
+% Models with greater expressivity (Kemp 2012; Piantadosi et al., 2015; Falkenhainer et al. 1989; Hummel and Holyoak 2003; Mathy 2010; Gentner, and Kurtz 2005; Kemp and Tenenbaum 2008; Anderson 1991; Kemp et al. 2010)
+
+\section{Empirical work}
+
+
+\citet{shepardhj1961} performed a set of classic experiments that test the difficulty of learning six artificial concepts---meaning the concepts were defined entirely in the lab. I will refer to these with the notation SHJ 1 - SHJ 6.) Using such concepts allowed the researchers to precisely measure the relationship between inputs (the explicitly defined concepts themselves) and behavioral outputs (learning rates over a number of trials) in a way that is not possible using pre-existing concepts. The experiments were able to control for factors such as the ratio of positive examples to negative examples and the set of relevant features. These factors are difficult to measure, much less control for, in concepts not artificially defined. The main finding is that the six concepts follow a consistent ordering in learning difficulty across different tasks. This ordering has since been replicated several times \citep[e.g.][]{feldman2000,kempr2012,crump2013}.
+
+These results provide indirect insight into questions of expressivity as well. As stated before, there are several concepts that simply cannot be represented by the Classical model and prototype model. Of the six used by \citet{shepardhj1961}, only one of them can be accurately expressed by either the Classical or prototype models while
+all were learned by participants above chance. However, this is not clear evidence of failure for less expressive models. There remain other explanations. One possibility is that when participants are asked to learn a concept for which their model cannot express an accurate description, they instead learn the most accurate description that can be expressed by the model. \citeauthor{shepardhj1961} did not test this possibility; indeed no model's predictions were compared to the results. Yet this set of experiments does provide a template for more direct tests of models of concept learning (and hence their expressivity) by systematically measuring learning outcomes on artificial concepts.
+
+\citet{feldman2000} does just that by expanding the analysis to 76 distinct concepts across six \emph{families}\footnote{A family was defined as a group of concepts over the same number of features and that have the same number of positive examples. For example, the original six concepts in \citet{shepardhj1961} compose a single family of concepts over three features with four positive examples.}. \citeauthor{feldman2000} showed that for this set of concepts, two factors are good predictors of the difficulty of learning. First is Boolean Complexity, which is the length of the shortest formula in Boolean logic that is consistent with the concept. Some concepts are very compressible in Boolean logic and thus have short formulas, such as $c = a$, while others are much less compressible, such as $ c = (a \wedge b) \vee (a \wedge c) \vee (b \wedge c) $. The second factor is parity---concepts with more positive examples than negative examples have a ``down'' parity while concepts with more negative than positive have an ``up'' parity. Subjects tended to learn ``up'' concepts much more easily than down and this factor was largely orthogonal to Boolean Complexity.
+
+Two later analyses \citep{goodwinj2011,vigo2009, feldman2006} have fit newer models, each based on the idea of logical complexity (or, equivalently, compressibility), to the same data, explaining up to 57\% of the variance.
+This idea, that measures of learning are predicted by logical complexity of a concept, has become increasingly important  as the concepts under study have required more expressive models.
+\citet{feldman2000} suggests that the limited scope of concepts under study made it appear that other factors orthogonal to complexity are the primary factors that determine concept learning difficulty. Complexity was suggested informally by some \citep[e.g.][]{shepardhj1961} and used indirectly in at least one analysis \citep{neisserw1962}, but it wasn't until the turn of the century that results for an expanded set of concepts supported complexity-based models.
+Together, the  empirical results from \citet{feldman2000} and the later analyses provide strong evidence in favor of the use of more expressive models of learning as well as studying concepts that require more expressive models (only six of the 76 concepts could be expressed by the Classical and prototype models).
+
+% \begin{figure}
+%     \centering
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \begin{Karnaughvuit}
+%             \minterms{4,5,6,7}
+%             \maxterms{0,1,2,3}
+%         \end{Karnaughvuit}
+%         \caption{$c = a$}
+%         \label{fig:karnaugh-a}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \begin{Karnaughvuit}
+%             \minterms{6,7}
+%             \maxterms{0,1,2,3,4,5}
+%         \end{Karnaughvuit}
+%         \caption{$c = a \wedge b$}
+%         \label{fig:karnaugh-ab}
+%     \end{subfigure}
+%     \begin{subfigure}[b]{0.3\textwidth}
+%         \begin{Karnaughvuit}
+%             \minterms{6}
+%             \maxterms{0,1,2,3,4,5,7}
+%         \end{Karnaughvuit}
+%         \caption{$c = a \wedge b \wedge c$}
+%         \label{fig:karnaugh-abc}
+%     \end{subfigure}
+%     \caption{Shown is a visual representation of the kinds of concepts that can be expressed using the classical model of concepts. Other concepts can be formed by transposing these, e.g. the ones in \cref{fig:karnaugh-ab} can be moved up by replacing $a$ with $\overline{a}$ to get $c=\overline{a} \wedge b$. However, concepts with a fundamentally different form cannot be expressed by the classical model (see \cref{fig:kshj}). }\label{fig:karnaugh}
+% \end{figure}
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[t]{0.3\textwidth}
+        \begin{Karnaughvuit}
+            \minterms{0,1,6,7}
+            \maxterms{2,3,4,5}
+        \end{Karnaughvuit}
+        \caption{SHJ 2: $c = (a\wedge b) \vee (\overline{a} \wedge \overline{b})$}
+        \label{fig:karnaugh-shj2}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+        \begin{Karnaughvuit}
+            \minterms{2,5,6,7}
+            \maxterms{0,1,3,4}
+        \end{Karnaughvuit}
+        \caption{SHJ 3: $ c = (a \wedge b) \vee (a \wedge c) \vee ( b \wedge \overline{c} ) $ }
+        \label{fig:karnaugh-shj3}
+    \end{subfigure}
+    \begin{subfigure}[t]{0.3\textwidth}
+        \begin{Karnaughvuit}
+            \minterms{3,5,6,7}
+            \maxterms{0,1,2,4}
+        \end{Karnaughvuit}
+        \caption{SHJ 4: $ c = (a \wedge b) \vee (a \wedge c) \vee ( b \wedge c ) $ }
+        \label{fig:karnaugh-shj4}
+    \end{subfigure}
+    \caption{ Three of the six concepts used by \citet{shepardhj1961}. These cannot be represented accurately by the Classical or prototype models. }\label{fig:kshj}
+\end{figure}
+
+In one experiment, \citet{kemp2012} tests several variations on the classic \citet{shepardhj1961} paradigm. \citeauthor{kempr2012} showed that subtle differences in how features are represented, such as whether each feature is additive (i.e. either on or off) or substitutive (i.e. either A or B or C), has an effect on the number of possible concepts and the complexity of each. He also proposed that in some of these cases the ability to quantify over features or objects would be a sensible method for representing these concepts.
+
+Indeed, \citeauthor{kemp2012} found that including quantification resulted in better predictions of learning difficulty in these concept spaces but only for object quantification. One interesting detail is that none of the concepts used required quantification in order to represent them, i.e. all could be accurately expressed by Boolean logic.
+So, even in cases where concepts can be represented without quantification, it seems that a \ac{rl} using quantification provides a better prediction of how subjects learn and use concepts.
+
+\citet{piantadositg2015} designed experiments that tested several concepts that, in terms of the intension\footnote{
+An intension is a description of a concept, such as a formula or rule. This is as opposed to an extension which defines a concept according to input and output.
+}, require a more expressive language to represent.
+The examples in these experiments were individual objects in a set of objects and the use of sets allowed intensions that include quantification, such as `one of the largest'.
+In one experiment, the authors took the best-performing \ac{rl} without quantification and added the several quantification methods discussed previously. They found that models performed much better when quantification methods were added, even accounting for the number of free parameters. The quantification methods that performed best were those conventional to \ac{fol} with the addition of a one-or-fewer quantifier.
+
+One finding from this series of experiments is that several concepts that could not be represented in Boolean logic could be learned very accurately, indeed more accurately than most Boolean-compatible concepts in the experiment.
+For example, the concept ``one of the smallest'' (true of any object in the set whose size was the smallest of the set) cannot be expressed using Boolean logic but was learned more successfully than most concepts that could be expressed using Boolean logic.
+A Boolean representational system can cheat, in a sense, by learning True and False for a given set of examples in such a concept, but the resulting formula will not always generalize.
+\citeauthor{piantadositg2015} also were careful to make strategies like this less useful by setting up the experiment so that each example was a new inductive inference conditioned on the previous examples. 
+
+% Experiments using strictly less expressive concepts (Hovland, 1952; Shepard et al. 1961; Bourne 1970;
+
+% Haygood and Bourne, 1965; Feldman 2000; Goodman et al., 2008)
+
+% Experiments including more expressive concepts (Skorstad et al. 1988; Kotovsky and Gentner 1996; Kemp 2012; Piantadosi et al., 2015; Gentner, and Kurtz 2005; Eaves and Shafto 2014; Kemp, Goodman, and Tenenbaum 2008; Kemp 2009; Kemp, Goodman and Tenenbaum 2008; Kemp et al. 2010)
+
+\section{Discussion}
+
+Expressivity is an important consideration in the evaluation of models of concept learning.
+Many models that have been used to explain concept learning lack the machinery necessary for application to concepts routinely taught to children, including many topics in early math.
+It therefore remains uncertain how the existing concept models come to bear on such concepts that require more expressive models.
+
+The first step is to assess and document the level of expressivity of major concept models. The Modeling section of this paper has begun that work. Important early models, like the Classical model, prototype model, and Perceptron, were shown to be incapable of expressing even the full space Boolean logic concepts.
+Many modern models, including exemplar models and several rule-based models are capable of expressing Boolean concepts but are no more expressive than that.
+There are also a few rule-based models that manage to express first-order logic concepts and even beyond.
+
+Remarkably, \citet{piantadositg2015} have developed a framework for testing against empirical data any representational system that can be defined using a representation language.
+This, or something like it, seems to be an ideal test bed for evaluating models of concept learning going forward.
+Current open questions include: in which cases people's learning is best explained by more expressive models as opposed to less expressive ones, and the ways in which each increase in expressivity is accomplished.
+Currently these questions are treated as modeling decisions but \citeauthor{piantadositg2015} have shown how decisions like these can be informed by the data instead.
+
+One notable omission from this assessment of concept models is the group of connectionist models more complex than the Perceptron.
+These were omitted for practical purposes, as it seems particularly difficult to assess the expressivity of connectionist models.
+It is possible in theory to construct a universal computer out of neural networks \citep{siegelmanns1991} and the connectionist models that have been applied to concept learning studies \citep{kruschke1992,lovemg2004} are certainly capable of expressing the class of Boolean concepts, but where exactly these fall is less clear. This remains a topic for further study.
+
+A second step is to evaluate the implications of the existing empirical work for the expressivity of models.
+This can mean several things.
+In some cases, experiments involving concepts that require more expressive models, like those from \citet{shepardhj1961} and \citet{feldman2000} have been key factors in establishing effects, like logical complexity, that were not apparent when only concepts from less expressive models were used.
+In other cases, expressivity is tested more explicitly.
+Evidence from \citet{kemp2012} and \citet{piantadositg2015} can inform the particular method of achieving certain kinds of expressivity: object quantification is more likely than feature quantification and people might be inclined to use a one-or-fewer quantifier in addition to the conventional quantifiers of \ac{fol}.
+
+This work points to promising areas of future study. Until concepts that require even more expressive models (e.g. second-order logic or higher) are tested, it remains possible that there are important learning effects that are more difficult to discern using only less expressive concepts.
+In addition, it is worth further investigating the specific mechanisms people use to represent concepts that require more expressive representations.
+What factors lead people to learn using less or more expressive representations? How do people make the switch, say, from Boolean logic to first-order logic (or whatever equivalently expressive representations) and vice-versa?
+Are there ways to strategically encourage learning at one level of expressivity over others?
+
+Then there are practical matters of constructing models with greater expressivity. The tractability of computational models, especially social learning, is of concern \citep{bealr2009,vanrooij2011,searcys2016} even for Boolean logic concepts.
+Generally speaking, as the expressivity of a model increases, so does the 
+the space of possible concepts, and this space is one of the inputs to learning models.
+This problem is compounded in models of social learning, where one agent must predict the learning outcome (and the computations involved) of another.
+There are multiple ways to approach this problem and all are worth exploring.
+Probabilistic sampling methods \citep{goodmantfg2008,piantadositg2015} allow a model to make inferences about a potentially infinite space of concepts without exploring the entire space.
+Another plausible approach specific to social situations is that learners might use inferences about cooperation to bypass steps that would otherwise be computationally expensive \citep{searcys2016}.
+
+Expressivity is not just a matter to its own.
+In order to better understand how people learn concepts, we should seek to better understand matters of expressivity in the models we use to explain learning.
+Expressivity is one of the many guideposts informing decisions about how models should be constructed, which concepts should be tested, and which questions should be investigated.
+Considering expressivity when designing models and experiments will help ensure that we build explanations that apply to the concepts we most care about. 
+
+% While many early models of concept learning suffered from problems of expressivity, researchers \citep{kemp2009,kemp2012,piantadositg2010,piantadositg2015} have been working to fill that gap and have found promising results. It now seems clear that subjects \emph{can} learn concepts that require more expressive representations (e.g. \ac{fol}) and that it is beginning to be understood how these expressive concepts are learned.
+
+% There are at least two major gaps that remain to be worked on, though. First, there are yet more difficult to express concepts to be studied.
+% While researchers have tested concepts that require expressive language, we can be sure that people learn many important concepts that are beyond even the expressive powers of \ac{fol}. For instance, while natural number \citep{piantadositg2012} can be learned using the tools of \ac{fol}, arithmetic both requires some method of second-order quantification \citep[see][]{searcys2016}. What components are used to learn concepts at this yet higher level of expression and how the end result compares to concept learning models at other levels remains to be studied.
+
+% Second, how these models relate to other measures of concept use remains to be seen.
+% The turn to complex rule-based models of concept learning has proven very fruitful for understanding how people learn concepts that could not be captured by some previous models.
+% However, many important aspects of how concepts are learned and used are not captured by these models (see \cref{tbl:questions}).
+% Some attempts have been made \citep[][]{nosofskypm1994,ericksonk1998} to combine the strengths of models that are good at explaining disparate phenomenon.
+
+
+
+% Do any models address the problem of tractability of complex concepts?
+% The study of expressive concepts presents the significant challenge of tractability. As the languages used to represent and generate concepts becomes more expressive, the space of concepts over which models of learning mus search grows very quickly. On the one hand, this presents an engineering problem for the model designers: efficiently searching over such a large space. Sampling-based techniques \citep{goodmantfg2008,piantadositg2015} have proven useful for addressing this problem, though it is uncertain how far they can be taken. On the other hand is a psychological problem: are the models and algorithms proposed to explain concept learning and use psychologically tractable. This is less of a problem for models of concept learning directly
+% but some models of social learning take, as input, models of non-social learning \citep{searcys2016,eavess2016}.
+% When one social agent's decision depends on predicting the outcome of another social agent's decision under uncertain conditions, a model that is only barely tractable compounds to become a problem. Addressing this and related tractability problems will likely require an exchange of ideas between those designing concept learning models and those using them in social models.
+
+% While the terrain of several concept learning models may seem quite varied at first, there is actually quite a lot of agreement. Both \citet{nosofskypm1994} and \citet{smithm1981} have argued that differences between exemplar, prototype, and rule-based models have more to do with processing assumptions than representational differences. Experiments that have compared a variety of representations, like those by \citet{goodwinj2011,kemp2012,piantadositg2015}, have found a variety of different \acp{rl} but there does seem to be a consensus about several individual parts. A \ac{rl} based on the standard Boolean connectives of AND, OR, and NOT (with the possible addition of XOR) consistently outperforms the many alternatives, though the structure that these connectives take on (e.g. \ac{dnf} or unstructured) is unclear. Additionally, there is some evidence that when incorporating the quantification needed to represent \ac{fol} concepts, the most common $\forall$ and $\exists$ quantifiers, with the possible addition of one-or-fewer, are best.
+
+% Expressivity continues to be an important aspect of models of concept learning and use. Recent work has confirmed the importance of expressivity by showing that expressive models provide better explanations of concept learning and that subjects learn concepts that require expressive representations. There is even a consensus around how representations might achieve this level of expression. However this consensus is relatively vague, and greater levels of expressive concepts remain unstudied.
+
+
+\newpage
+
+\printacronyms
+
+\printbibliography
+
+
+\end{document}
